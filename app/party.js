@@ -4,7 +4,10 @@ const log = require('loglevel').getLogger('Party'),
   Helper = require('./helper'),
   moment = require('moment'),
   NaturalArgumentType = require('../types/natural'),
+  settings = require('../data/settings'),
   {PartyStatus, Team} = require('./constants');
+
+moment.locale(settings.locale);
 
 let PartyManager;
 

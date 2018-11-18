@@ -10,6 +10,8 @@ const log = require('loglevel').getLogger('JoinCommand'),
   settings = require('../../data/settings'),
   Utility = require('../../app/utility');
 
+moment.locale(settings.locale);
+
 class JoinCommand extends Commando.Command {
   constructor(client) {
     super(client, {

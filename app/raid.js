@@ -11,6 +11,8 @@ const log = require('loglevel').getLogger('Raid'),
   Status = require('./status'),
   TimeType = require('../types/time');
 
+moment.locale(settings.locale);
+
 let Gym,
   PartyManager;
 

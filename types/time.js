@@ -5,6 +5,8 @@ const Commando = require('discord.js-commando'),
   {TimeMode, TimeParameter} = require('../app/constants'),
   settings = require('../data/settings.json');
 
+moment.locale(settings.locale);
+
 let PartyManager;
 
 process.nextTick(() => PartyManager = require('../app/party-manager'));
@@ -134,7 +136,7 @@ class TimeType extends Commando.ArgumentType {
     }
 
     if (timeMode !== TimeMode.RELATIVE) {
-      const enteredDate = moment(valueToParse, ['hmm a', 'Hmm', 'h:m a', 'H:m', 'M-D hmm a', 'M-D Hmm', 'M-D h:m a', 'M-D H:m', 'M-D h a', 'M-D H']);
+      const enteredDate = moment(valueToParse, ['hmm a', 'Hmm', 'h:m a', 'H:m', 'D-M hmm a', 'D-M Hmm', 'D-M h:m a', 'D-M H:m', 'D-M h a', 'D-M H']);
 
       if (enteredDate.isValid()) {
         possibleTimes.push(...TimeType.generateTimes(enteredDate, arg.key, raidHatchTime));
@@ -280,7 +282,7 @@ class TimeType extends Commando.ArgumentType {
     }
 
     if (timeMode !== TimeMode.RELATIVE) {
-      const enteredDate = moment(valueToParse, ['hmm a', 'Hmm', 'h:m a', 'H:m', 'M-D hmm a', 'M-D Hmm', 'M-D h:m a', 'M-D H:m', 'M-D h a', 'M-D H']);
+      const enteredDate = moment(valueToParse, ['hmm a', 'Hmm', 'h:m a', 'H:m', 'D-M hmm a', 'D-M Hmm', 'D-M h:m a', 'D-M H:m', 'D-M h a', 'D-M H']);
 
       if (enteredDate.isValid()) {
         possibleTimes.push(...TimeType.generateTimes(enteredDate, arg.key, raidHatchTime));

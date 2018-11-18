@@ -8,6 +8,8 @@ const log = require('loglevel').getLogger('StartTimeCommand'),
   PartyManager = require('../../app/party-manager'),
   settings = require('../../data/settings');
 
+moment.locale(settings.locale);
+
 class StartTimeCommand extends Commando.Command {
   constructor(client) {
     super(client, {

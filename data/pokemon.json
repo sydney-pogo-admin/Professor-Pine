@@ -131,7 +131,8 @@
     "name": "pikachu"
   },
   {
-    "name": "raichu"
+    "name": "raichu",
+    "tier": 3
   },
   {
     "name": "raichu_alola",
@@ -841,10 +842,12 @@
     "name": "quagsire"
   },
   {
-    "name": "espeon"
+    "name": "espeon",
+    "tier": 3
   },
   {
-    "name": "umbreon"
+    "name": "umbreon",
+    "tier": 3
   },
   {
     "name": "murkrow"
@@ -1814,7 +1817,7 @@
   },
   {
     "name": "cresselia",
-    "tier":  5
+    "tier": 5
   },
   {
     "name": "phione"

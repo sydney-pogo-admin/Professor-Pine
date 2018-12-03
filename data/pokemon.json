@@ -1616,7 +1616,8 @@
     "name": "ambipom"
   },
   {
-    "name": "drifloon"
+    "name": "drifloon",
+    "tier": 1
   },
   {
     "name": "drifblim"
@@ -1817,6 +1818,10 @@
   },
   {
     "name": "cresselia",
+    "nickname": [
+      "regiduck",
+      "regiswan"
+    ],
     "tier": 5
   },
   {

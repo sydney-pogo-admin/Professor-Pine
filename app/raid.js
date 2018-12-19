@@ -685,7 +685,7 @@ class Raid extends Party {
     if (this.pokemon.weakness && this.pokemon.weakness.length > 0) {
       embed.addField('**Weaknesses**', this.pokemon.weakness
         .map(weakness => Helper.getEmoji(weakness.type).toString() +
-          (weakness.multiplier > 1.5 ?
+          (weakness.multiplier > 1.6 ?
             'x2 ' :
             ''))
         .join(''));

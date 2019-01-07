@@ -1,38 +1,33 @@
 "use strict";
 
-const log = require('loglevel').getLogger('AutosetCommand'),
+const log = require('loglevel').getLogger('MarkShinyCommand'),
   Commando = require('discord.js-commando'),
   {CommandGroup} = require('../../app/constants'),
   Helper = require('../../app/helper'),
   Pokemon = require('../../app/pokemon'),
   settings = require('../../data/settings');
 
-class AutosetCommand extends Commando.Command {
+class MarkShinyCommand extends Commando.Command {
   constructor(client) {
     super(client, {
-      name: 'auto-set',
+      name: 'mark-shiny',
       group: CommandGroup.ADMIN,
-      memberName: 'auto-set',
-      description: 'Sets the default boss for a tier to be automatically set when reported.',
-      examples: ['\t!auto-set magnemite 1'],
+      memberName: 'mark-shiny',
+      description: 'Marks a raid boss as potentially shiny.',
+      examples: ['\t!mark-shiny lugia'],
+      aliases: ['shiny'],
       args: [
         {
           key: 'pokemon',
-          prompt: 'What pokémon are you defaulting a tier to?\nExample: `lugia`\n',
+          prompt: 'What pokémon are you marking as potentially shiny?\nExample: `lugia`\n',
           type: 'pokemon'
-        },
-        {
-          key: 'tier',
-          prompt: 'What tier are you defaulting? (`1`, `2`, `3`, `4`, `5`, `ex`)',
-          type: 'string',
-          oneOf: ['1', '2', '3', '4', '5', 'ex']
         }
       ],
       guildOnly: true
     });
 
     client.dispatcher.addInhibitor(message => {
-      if (!!message.command && message.command.name === 'auto-set') {
+      if (!!message.command && message.command.name === 'mark-shiny') {
         if (!Helper.isBotManagement(message)) {
           return ['unauthorized', message.reply('You are not authorized to use this command.')];
         }
@@ -43,18 +38,15 @@ class AutosetCommand extends Commando.Command {
   }
 
   async run(message, args) {
-    let pokemon = args['pokemon'],
+    const pokemon = args['pokemon'],
       tier = args['tier'];
 
-    if (tier === 'ex') {
-      tier = 6;
-    }
-
-    Pokemon.setDefaultTierBoss(pokemon.name || tier, tier)
+    Pokemon.markShiny(pokemon.formName, true)
       .then(result => {
         message.react(Helper.getEmoji(settings.emoji.thumbsUp) || '👍');
+        Pokemon.buildIndex();
       }).catch(err => log.error(err));
   }
 }
 
-module.exports = AutosetCommand;
+module.exports = MarkShinyCommand;

@@ -666,7 +666,7 @@ class Raid extends Party {
           '__Egg Hatched At__' :
           '__Egg Hatch Time__' :
         '',
-
+      hatchStage = this.getHatchStage(),
       gym = Gym.getGym(this.gymId),
       gymName = !!gym.nickname ?
         gym.nickname :
@@ -701,9 +701,17 @@ class Raid extends Party {
           attendeeEntry[1].status === PartyStatus.COMPLETE_PENDING),
       completeAttendees = sortedAttendees
         .filter(attendeeEntry => attendeeEntry[1].status === PartyStatus.COMPLETE),
+
+      embedColors = {
+        2: 'GREEN',
+        3: '#ff0000'
+      },
       embed = new Discord.MessageEmbed();
 
-    embed.setColor('GREEN');
+    if (hatchStage !== 1) {
+      embed.setColor(embedColors[hatchStage]);
+    }
+
     embed.setTitle(`Map Link: ${gymName}`);
     embed.setURL(gymUrl);
 
@@ -887,19 +895,17 @@ class Raid extends Party {
   generatePokemonName(pokemon) {
     const nonCharCleaner = new RegExp(/[^\w]/, 'g');
     let type = '',
-      now = moment(),
-      hatchTime = moment(this.hatchTime),
-      endTime = moment(this.endTime);
+      prefixType = this.getHatchStage();
 
-    if (this.hatchTime === '' || now < hatchTime || hatchTime.isSame(now)) {
+    if (prefixType === 1) {
       type = 'egg ' + pokemon.tier;
-    } else if (now >= endTime && pokemon.name === undefined) {
+    } else if (prefixType === 3 && pokemon.name === undefined) {
       type = 'expired ' + pokemon.tier;
-    } else if (now >= endTime && pokemon.name !== undefined) {
+    } else if (prefixType === 3 && pokemon.name !== undefined) {
       type = 'expired ' + pokemon.name;
-    } else if (now >= hatchTime && pokemon.name === undefined) {
+    } else if (prefixType === 2 && pokemon.name === undefined) {
       type = 'boss ' + pokemon.tier;
-    } else if (now >= hatchTime && pokemon.name !== undefined) {
+    } else if (prefixType === 2 && pokemon.name !== undefined) {
       type = pokemon.name;
     }
 
@@ -907,6 +913,24 @@ class Raid extends Party {
       .split(' ')
       .filter(token => token.length > 0)
       .join('-');
+  }
+
+  getHatchStage() {
+    let now = moment(),
+      hatchTime = !!this.hatchTime ?
+        moment(this.hatchTime) :
+        moment.invalid(),
+      endTime = (!!this.endTime && this.endTime !== TimeType.UNDEFINED_END_TIME) ?
+        moment(this.endTime) :
+        moment.invalid();
+
+    if (!hatchTime.isValid() || now < hatchTime || hatchTime.isSame(now)) {
+      return 1;
+    } else if (now >= endTime) {
+      return 3;
+    } else if (now >= hatchTime) {
+      return 2;
+    }
   }
 
   toJSON() {

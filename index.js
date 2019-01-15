@@ -58,6 +58,7 @@ if (settings.features.roles) {
 if (settings.features.notifications) {
   Client.registry.registerGroup(CommandGroup.NOTIFICATIONS, 'Notifications');
 }
+Client.registry.registerGroup(CommandGroup.SILPH, 'Silph Road');
 
 Client.registry.registerGroup(CommandGroup.COMMANDS, 'Command');
 Client.registry.registerGroup(CommandGroup.UTIL, 'Utility');
@@ -92,6 +93,8 @@ if (settings.features.notifications) {
 
 Client.registry.registerCommands([
   require('./commands/notifications/mention'),
+  require('./commands/notifications/mention-groups'),
+  require('./commands/notifications/mention-shouts'),
 
   require('./commands/raids/join'),
   require('./commands/raids/interested'),
@@ -131,7 +134,8 @@ Client.registry.registerCommands([
   require('./commands/util/boss-tier'),
   require('./commands/admin/autoset'),
   require('./commands/admin/shiny'),
-  require('./commands/admin/not-shiny')
+  require('./commands/admin/not-shiny'),
+  require('./commands/tsr/card')
 ]);
 
 if (privateSettings.regionMapLink !== '') {

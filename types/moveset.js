@@ -1,6 +1,7 @@
 "use strict";
 
 const Commando = require('discord.js-commando'),
+  Moves = require('../app/moves'),
   PartyManager = require('../app/party-manager');
 
 class MovesetType extends Commando.ArgumentType {
@@ -9,70 +10,57 @@ class MovesetType extends Commando.ArgumentType {
   }
 
   validate(value, message, arg) {
-    let raid = PartyManager.parties[message.channel.id];
+    const raid = PartyManager.parties[message.channel.id];
 
     if (!!!raid) {
       return 'No raid found. Please set the moveset from a raid channel.';
     }
 
-    let raidBoss = raid.pokemon;
+    const raidBoss = raid.pokemon;
 
     if (!!!raidBoss) {
       return 'No raid boss set for the raid. Please set the raid boss prior to the moveset.';
     }
 
-    let moves = value.split('/').map(move => move.trim());
-    let quickFound = false;
-    let quickFoundMove = '';
-    let cinematicFound = false;
-    let cinematicFoundMove = '';
+    const moves = value.split('/', 2)
+        .map(move => move.trim());
+
+    let notValidatedMoves = moves;
 
     moves.forEach((move, index) => {
-      let name = move.toUpperCase().replace(/\s/g, '_');
+      const searchedMoves = Moves.search(move.split(/\s/g));
+
       raidBoss.quickMoves.forEach(validMove => {
-        if (validMove.indexOf(name) !== -1) {
-          quickFound = true;
-          quickFoundMove = move;
-        }
+        searchedMoves.forEach(searchedMove => {
+          if (validMove.indexOf(searchedMove) !== -1) {
+            notValidatedMoves = notValidatedMoves
+              .filter(value => value !== move);
+          }
+        });
       });
 
       raidBoss.cinematicMoves.forEach(validMove => {
-        if (validMove.indexOf(name) !== -1) {
-          cinematicFound = true;
-          cinematicFoundMove = move;
-        }
+        searchedMoves.forEach(searchedMove => {
+          if (validMove.indexOf(searchedMove) !== -1) {
+            notValidatedMoves = notValidatedMoves
+              .filter(value => value !== move);
+          }
+        });
       });
     });
 
-    let raidBossName = raidBoss.name.charAt(0).toUpperCase() + raidBoss.name.substr(1);
-
     let errorMessage = '';
-    if (moves.length === 1 && !quickFound && !cinematicFound) {
-      errorMessage = this.capitalizeMoveset(moves[0]) + ' is not a valid move for ' + raidBossName;
-    }
 
-    if (moves.length === 2 && !quickFound && !cinematicFound) {
-      errorMessage = this.capitalizeMoveset(moves[0]) + ' and ' + moves[1] + ' are not valid moves for ' + raidBossName;
-    }
+    if (notValidatedMoves.length > 0) {
+      const raidBossName = raidBoss.name.charAt(0).toUpperCase() + raidBoss.name.substr(1);
 
-    if (moves.length === 2 && !quickFound) {
-      if (moves[0] === cinematicFoundMove) {
-        errorMessage = this.capitalizeMoveset(moves[1]) + ' is not a valid move for ' + raidBossName;
+      if (notValidatedMoves.length === 1) {
+        errorMessage = this.capitalizeMoveset(notValidatedMoves[0]) + ' is not a valid move for ' + raidBossName;
       } else {
-        errorMessage = this.capitalizeMoveset(moves[0]) + ' is not a valid move for ' + raidBossName;
+        errorMessage = this.capitalizeMoveset(notValidatedMoves[0]) + ' and ' + this.capitalizeMoveset(notValidatedMoves[1]) + ' are not valid moves for ' + raidBossName;
       }
-    }
 
-    if (moves.length === 2 && !cinematicFound) {
-      if (moves[0] === quickFoundMove) {
-        errorMessage = this.capitalizeMoveset(moves[1]) + ' is not a valid move for ' + raidBossName;
-      } else {
-        errorMessage = this.capitalizeMoveset(moves[0]) + ' is not a valid move for ' + raidBossName;
-      }
-    }
-
-    if (errorMessage !== '') {
-      errorMessage += '\n\n' + arg.prompt + '\n';
+      errorMessage += '.\n\n' + arg.prompt + '\n';
       return errorMessage;
     }
 
@@ -86,26 +74,32 @@ class MovesetType extends Commando.ArgumentType {
   }
 
   parse(value, message, arg) {
-    let raid = PartyManager.parties[message.channel.id];
-    let raidBoss = raid.pokemon;
-    let moves = value.split('/').map(move => move.trim());
+    const raid = PartyManager.parties[message.channel.id],
+      raidBoss = raid.pokemon;
+    const moves = value.split('/', 2)
+      .map(move => move.trim());
     let moveset = {
       'quick': null,
       'cinematic': null
     };
 
     moves.forEach((move, index) => {
-      let name = move.toUpperCase().replace(/\s/g, '_');
+      const searchedMoves = Moves.search(move.split(/\s/g));
+
       raidBoss.quickMoves.forEach(validMove => {
-        if (validMove.indexOf(name) !== -1) {
-          moveset.quick = validMove;
-        }
+        searchedMoves.forEach(searchedMove => {
+          if (validMove.indexOf(searchedMove) !== -1) {
+            moveset.quick = searchedMove;
+          }
+        });
       });
 
       raidBoss.cinematicMoves.forEach(validMove => {
-        if (validMove.indexOf(name) !== -1) {
-          moveset.cinematic = validMove;
-        }
+        searchedMoves.forEach(searchedMove => {
+          if (validMove.indexOf(searchedMove) !== -1) {
+            moveset.cinematic = searchedMove;
+          }
+        });
       });
     });
 

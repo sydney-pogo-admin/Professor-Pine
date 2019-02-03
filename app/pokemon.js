@@ -271,7 +271,7 @@ class Pokemon extends Search {
       updateObject.exclusive = false;
     }
 
-    if (['0', '1', '2', '3', '4', '5'].indexOf(tier) !== -1) {
+    if (['0', '1', '2', '3', '4', '5', '7'].indexOf(tier) !== -1) {
       updateObject.tier = tier;
     }
 
@@ -401,20 +401,20 @@ class Pokemon extends Search {
         break;
 
       case 3:
-        stamina = 3000;
+        stamina = 3600;
         break;
 
       case 4:
-        stamina = 7500;
+        stamina = 9000;
         break;
 
       case 5:
-        stamina = 12500;
+        stamina = 15000;
         break;
     }
 
     if (pokemon.exclusive) {
-      stamina = 12500;
+      stamina = 15000;
     }
 
     return Math.floor(((pokemon.stats.baseAttack + 15) * Math.sqrt(pokemon.stats.baseDefense + 15) *
